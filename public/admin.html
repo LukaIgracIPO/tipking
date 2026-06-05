@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TipKing — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #D4AF37;
+  --gold-light: #F0D060;
+  --gold-dim: rgba(212,175,55,0.13);
+  --bg: #0a0c10;
+  --bg2: #111318;
+  --bg3: #181c24;
+  --border: rgba(212,175,55,0.18);
+  --border2: rgba(255,255,255,0.07);
+  --text: #e8eaf0;
+  --muted: #6b7280;
+  --green: #22c55e;
+  --green-dim: rgba(34,197,94,0.12);
+  --red: #ef4444;
+  --red-dim: rgba(239,68,68,0.12);
+  --radius: 10px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+/* LOGIN */
+.login-screen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background: var(--bg);
+  padding: 20px;
+}
+
+.login-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 40px;
+  width: 100%;
+  max-width: 350px;
+  text-align: center;
+}
+
+.login-logo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 2px;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.login-logo span { color: var(--text); }
+
+.login-subtitle {
+  color: var(--muted);
+  font-size: 13px;
+  margin-bottom: 30px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.login-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.login-form-group input {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 12px 14px;
+  border-radius: 7px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+}
+
+.login-form-group input:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.login-btn {
+  width: 100%;
+  padding: 12px;
+  background: var(--gold);
+  color: #0a0c10;
+  border: none;
+  border-radius: 7px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.login-btn:hover {
+  background: var(--gold-light);
+}
+
+.login-error {
+  color: var(--red);
+  font-size: 12px;
+  margin-top: 12px;
+  display: none;
+}
+
+/* ADMIN PANEL */
+.admin-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 220px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border2);
+  padding: 20px 0;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar-logo {
+  padding: 20px 18px 16px;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 22px;
+  color: var(--gold);
+  letter-spacing: 2px;
+  border-bottom: 1px solid var(--border2);
+  margin-bottom: 10px;
+}
+
+.sidebar-logo span {
+  color: var(--muted);
+  font-size: 11px;
+  display: block;
+  letter-spacing: 1px;
+  font-family: 'DM Sans', sans-serif;
+  margin-top: 2px;
+}
+
+.nav-group {
+  padding: 14px 10px 6px;
+}
+
+.nav-label {
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 0 8px;
+  margin-bottom: 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 7px;
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: 2px;
+}
+
+.nav-item:hover {
+  background: var(--bg3);
+  color: var(--text);
+}
+
+.nav-item.active {
+  background: var(--gold-dim);
+  color: var(--gold);
+}
+
+.nav-item .ni {
+  font-size: 16px;
+  width: 18px;
+  text-align: center;
+}
+
+.sidebar-bottom {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 14px 10px;
+  border-top: 1px solid var(--border2);
+}
+
+.logout-btn {
+  width: 100%;
+  padding: 8px;
+  background: transparent;
+  border: 1px solid var(--border2);
+  color: var(--red);
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.logout-btn:hover {
+  border-color: var(--red);
+  background: var(--red-dim);
+}
+
+.main {
+  margin-left: 220px;
+  flex: 1;
+  padding: 28px 32px;
+}
+
+.page {
+  display: none;
+}
+
+.page.active {
+  display: block;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 2px;
+  color: var(--text);
+}
+
+.page-sub {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.kpi {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+
+.kpi-val {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 1px;
+  color: var(--gold);
+}
+
+.kpi-label {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 2px;
+}
+
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.card-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+th {
+  text-align: left;
+  padding: 10px 16px;
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: var(--bg3);
+  border-bottom: 1px solid var(--border2);
+}
+
+td {
+  padding: 11px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  color: var(--text);
+}
+
+tr:hover td { background: rgba(255,255,255,0.02); }
+
+.badge {
+  display: inline-block;
+  font-size: 11px;
+  padding: 3px 9px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.badge-green { background: var(--green-dim); color: var(--green); }
+.badge-red { background: var(--red-dim); color: var(--red); }
+.badge-gold { background: var(--gold-dim); color: var(--gold); }
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  border: none;
+}
+
+.btn-gold { background: var(--gold); color: #0a0c10; }
+.btn-gold:hover { background: var(--gold-light); }
+.btn-red { background: var(--red-dim); color: var(--red); }
+.btn-red:hover { background: rgba(239,68,68,0.2); }
+.btn-sm { padding: 5px 11px; font-size: 12px; }
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.form-grid.single { grid-template-columns: 1fr; }
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.form-group label {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: 7px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--gold);
+}
+
+.form-group textarea { resize: vertical; min-height: 70px; }
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(0,0,0,0.7);
+  align-items: center;
+  justify-content: center;
+}
+
+.modal.open { display: flex; }
+
+.modal-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 600px;
+  width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 1px;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 1000;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast.success { border-color: var(--green); }
+.toast.error { border-color: var(--red); }
+
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .main { margin-left: 0; padding: 16px; }
+  .form-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen" class="login-screen">
+  <div class="login-box">
+    <div class="login-logo">TIP<span>KING</span></div>
+    <p class="login-subtitle">Admin Panel</p>
+    
+    <div class="login-form-group">
+      <input type="password" id="passInput" placeholder="Unesi lozinku" onkeypress="if(event.key==='Enter') loginAdmin()">
+    </div>
+    
+    <button class="login-btn" onclick="loginAdmin()">Ulogujem se</button>
+    
+    <div class="login-error" id="loginError">❌ Pogrešna lozinka!</div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel" class="admin-container" style="display:none">
+  <div class="sidebar">
+    <div class="sidebar-logo">TIP<span>KING</span></div>
+    
+    <div class="nav-group">
+      <div class="nav-label">Menu</div>
+      <div class="nav-item active" onclick="switchPage('dashboard')">
+        <span class="ni">📊</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="switchPage('tips')">
+        <span class="ni">⚽</span> Tipovi
+      </div>
+      <div class="nav-item" onclick="switchPage('promos')">
+        <span class="ni">🎁</span> Promo kodovi
+      </div>
+      <div class="nav-item" onclick="switchPage('stats')">
+        <span class="ni">📈</span> Statistike
+      </div>
+    </div>
+
+    <div class="sidebar-bottom">
+      <button class="logout-btn" onclick="logoutAdmin()">🚪 Odjavi se</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <h1 class="page-title">Dashboard</h1>
+        <p class="page-sub">Pregled tipova i promo kodova</p>
+      </div>
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-val" id="total-tips">0</div>
+          <div class="kpi-label">Ukupno tipova</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-val" id="total-wins">0</div>
+          <div class="kpi-label">Dobici</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-val" id="total-losses">0</div>
+          <div class="kpi-label">Promašaji</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-val" id="total-promos">0</div>
+          <div class="kpi-label">Promo kodova</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIPOVI -->
+    <div class="page" id="page-tips">
+      <div class="page-header">
+        <h1 class="page-title">Upravljanje Tipovima</h1>
+        <p class="page-sub">Dodaj, uredi ili obriši tipove</p>
+      </div>
+      <button class="btn btn-gold" style="margin-bottom:16px" onclick="openModal('modal-tip')">+ Dodaj novi tip</button>
+      <div class="card">
+        <table id="tips-table">
+          <thead>
+            <tr>
+              <th>SPORT</th>
+              <th>MUČ</th>
+              <th>TIP</th>
+              <th>REZULTAT</th>
+              <th>AKCIJA</th>
+            </tr>
+          </thead>
+          <tbody id="tips-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PROMO KODOVI -->
+    <div class="page" id="page-promos">
+      <div class="page-header">
+        <h1 class="page-title">Promo Kodovi</h1>
+        <p class="page-sub">Upravljanje bonusima</p>
+      </div>
+      <button class="btn btn-gold" style="margin-bottom:16px" onclick="openModal('modal-promo')">+ Dodaj promo kod</button>
+      <div class="card">
+        <table id="promos-table">
+          <thead>
+            <tr>
+              <th>NAZIV</th>
+              <th>KOD</th>
+              <th>BONUS</th>
+              <th>AKCIJA</th>
+            </tr>
+          </thead>
+          <tbody id="promos-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- STATISTIKE -->
+    <div class="page" id="page-stats">
+      <div class="page-header">
+        <h1 class="page-title">Statistike Sajta</h1>
+        <p class="page-sub">Prikazane na glavnoj stranici</p>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Uredi statistike</div>
+        </div>
+        <div style="padding:20px">
+          <div id="site-stats-form"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL TIP -->
+<div class="modal" id="modal-tip">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Tip</div>
+      <button class="modal-close" onclick="closeModal('modal-tip')">✕</button>
+    </div>
+    <input type="hidden" id="edit-tip-id">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Sport</label>
+        <select id="t-sport">
+          <option value="">Izaberi</option>
+          <option value="fudbal">⚽ Fudbal</option>
+          <option value="košarka">🏀 Košarka</option>
+          <option value="tenis">🎾 Tenis</option>
+          <option value="hokej">🏒 Hokej</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Meč</label>
+        <input id="t-match" placeholder="Naziv meča">
+      </div>
+      <div class="form-group">
+        <label>Liga</label>
+        <input id="t-league" placeholder="Liga">
+      </div>
+      <div class="form-group">
+        <label>Tip</label>
+        <input id="t-tip" placeholder="1, X, 2, GG, itd">
+      </div>
+      <div class="form-group">
+        <label>Kvot</label>
+        <input id="t-odds" type="number" step="0.01" placeholder="1.50">
+      </div>
+      <div class="form-group">
+        <label>Rezultat</label>
+        <select id="t-result">
+          <option value="pending">⏳ Na čekanju</option>
+          <option value="win">✅ Dobitak</option>
+          <option value="loss">❌ Promašaj</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="saveTip()">Sačuvaj tip</button>
+  </div>
+</div>
+
+<!-- MODAL PROMO -->
+<div class="modal" id="modal-promo">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">Promo Kod</div>
+      <button class="modal-close" onclick="closeModal('modal-promo')">✕</button>
+    </div>
+    <input type="hidden" id="edit-promo-id">
+    <div class="form-grid single">
+      <div class="form-group">
+        <label>Naziv kladionice</label>
+        <input id="p-name" placeholder="Mozzart Bet">
+      </div>
+      <div class="form-group">
+        <label>Kod</label>
+        <input id="p-code" placeholder="TIPKING100">
+      </div>
+      <div class="form-group">
+        <label>Bonus</label>
+        <input id="p-bonus" placeholder="100% do 10.000 RSD">
+      </div>
+      <div class="form-group">
+        <label>Opis</label>
+        <textarea id="p-desc" placeholder="Detaljan opis..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Status</label>
+        <select id="p-status">
+          <option value="aktivan">Aktivan</option>
+          <option value="neaktivan">Neaktivan</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-gold" style="margin-top:16px;width:100%" onclick="savePromo()">Sačuvaj promo</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toast-icon">✅</span>
+  <span id="toast-msg"></span>
+</div>
+
+<script>
+const API_BASE = window.location.origin;
+const ADMIN_PASSWORD = 'TipKing*1*';
+
+function loginAdmin() {
+  const pass = document.getElementById('passInput').value;
+  const errorMsg = document.getElementById('loginError');
+  
+  if (pass === ADMIN_PASSWORD) {
+    sessionStorage.setItem('adminLogged', 'true');
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'flex';
+    initApp();
+  } else {
+    errorMsg.style.display = 'block';
+    setTimeout(() => { errorMsg.style.display = 'none'; }, 3000);
+  }
+}
+
+function logoutAdmin() {
+  if (confirm('Odjavljujem se?')) {
+    sessionStorage.removeItem('adminLogged');
+    location.reload();
+  }
+}
+
+window.addEventListener('load', function() {
+  if (sessionStorage.getItem('adminLogged') === 'true') {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'flex';
+    initApp();
+  }
+});
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function toast(msg, type='success') {
+  document.getElementById('toast-msg').textContent = msg;
+  document.getElementById('toast-icon').textContent = type === 'success' ? '✅' : '❌';
+  const t = document.getElementById('toast');
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function switchPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelector(`[onclick="switchPage('${name}')"]`).classList.add('active');
+}
+
+let allTips = [];
+let allPromos = [];
+let siteStats = {};
+
+async function loadData() {
+  try {
+    const res = await fetch(`${API_BASE}/api/data`);
+    const data = await res.json();
+    allTips = data.tips || [];
+    allPromos = data.promos || [];
+    siteStats = data.siteStats || {};
+    renderDashboard();
+    renderTips();
+    renderPromos();
+    renderSiteStatsForm();
+  } catch (err) {
+    console.error('Error loading data:', err);
+  }
+}
+
+function renderDashboard() {
+  const wins = allTips.filter(t => t.result === 'win').length;
+  const losses = allTips.filter(t => t.result === 'loss').length;
+  
+  document.getElementById('total-tips').textContent = allTips.length;
+  document.getElementById('total-wins').textContent = wins;
+  document.getElementById('total-losses').textContent = losses;
+  document.getElementById('total-promos').textContent = allPromos.length;
+}
+
+function renderTips() {
+  const tbody = document.getElementById('tips-tbody');
+  tbody.innerHTML = allTips.map(t => `
+    <tr>
+      <td>${t.sport}</td>
+      <td>${t.match}</td>
+      <td>${t.tip}</td>
+      <td><span class="badge badge-${t.result === 'win' ? 'green' : t.result === 'loss' ? 'red' : 'gold'}">${t.result}</span></td>
+      <td>
+        <button class="btn btn-sm btn-gold" onclick="editTip(${t.id})">Uredi</button>
+        <button class="btn btn-sm btn-red" onclick="deleteTip(${t.id})">Obriši</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function editTip(id) {
+  const t = allTips.find(x => x.id === id);
+  if (!t) return;
+  document.getElementById('edit-tip-id').value = id;
+  document.getElementById('t-sport').value = t.sport;
+  document.getElementById('t-match').value = t.match;
+  document.getElementById('t-league').value = t.league;
+  document.getElementById('t-tip').value = t.tip;
+  document.getElementById('t-odds').value = t.odds;
+  document.getElementById('t-result').value = t.result;
+  openModal('modal-tip');
+}
+
+async function saveTip() {
+  const id = parseInt(document.getElementById('edit-tip-id').value) || null;
+  const t = {
+    id: id || Date.now(),
+    sport: document.getElementById('t-sport').value,
+    match: document.getElementById('t-match').value.trim(),
+    league: document.getElementById('t-league').value.trim(),
+    tip: document.getElementById('t-tip').value.trim().toUpperCase(),
+    odds: parseFloat(document.getElementById('t-odds').value),
+    result: document.getElementById('t-result').value,
+    note: '',
+    date: id ? allTips.find(x=>x.id==id)?.date : new Date().toISOString(),
+    visibility: 'free',
+    bookmakers: []
+  };
+
+  if (!t.sport || !t.match || !t.tip) {
+    toast('Svi polji su obavezni!', 'error');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/api/tips`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(t)
+    });
+    
+    if (res.ok) {
+      closeModal('modal-tip');
+      loadData();
+      toast(id ? 'Tip izmenjen' : 'Tip dodat', 'success');
+    }
+  } catch (err) {
+    toast('Greška pri čuvanju', 'error');
+  }
+}
+
+async function deleteTip(id) {
+  if (!confirm('Obriši tip?')) return;
+  
+  try {
+    const res = await fetch(`${API_BASE}/api/tips/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      loadData();
+      toast('Tip obrisan', 'success');
+    }
+  } catch (err) {
+    toast('Greška pri brisanju', 'error');
+  }
+}
+
+function renderPromos() {
+  const tbody = document.getElementById('promos-tbody');
+  tbody.innerHTML = allPromos.map(p => `
+    <tr>
+      <td>${p.name}</td>
+      <td>${p.code}</td>
+      <td>${p.bonus}</td>
+      <td>
+        <button class="btn btn-sm btn-gold" onclick="editPromo(${p.id})">Uredi</button>
+        <button class="btn btn-sm btn-red" onclick="deletePromo(${p.id})">Obriši</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+async function editPromo(id) {
+  const p = allPromos.find(x => x.id === id);
+  if (!p) return;
+  document.getElementById('edit-promo-id').value = id;
+  document.getElementById('p-name').value = p.name;
+  document.getElementById('p-code').value = p.code;
+  document.getElementById('p-bonus').value = p.bonus;
+  document.getElementById('p-desc').value = p.desc;
+  document.getElementById('p-status').value = p.status;
+  openModal('modal-promo');
+}
+
+async function savePromo() {
+  const id = document.getElementById('edit-promo-id').value;
+  const p = {
+    id: id ? parseInt(id) : Date.now(),
+    name: document.getElementById('p-name').value.trim(),
+    code: document.getElementById('p-code').value.trim().toUpperCase(),
+    bonus: document.getElementById('p-bonus').value.trim(),
+    desc: document.getElementById('p-desc').value.trim(),
+    status: document.getElementById('p-status').value,
+    featured: 'ne',
+    clicks: id ? allPromos.find(x=>x.id==id)?.clicks||0 : 0
+  };
+
+  if (!p.name || !p.code) {
+    toast('Naziv i kod su obavezni!', 'error');
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_BASE}/api/promos`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(p)
+    });
+    
+    if (res.ok) {
+      closeModal('modal-promo');
+      loadData();
+      toast(id ? 'Promo kod izmenjen' : 'Promo kod dodat', 'success');
+    }
+  } catch (err) {
+    toast('Greška pri čuvanju', 'error');
+  }
+}
+
+async function deletePromo(id) {
+  if (!confirm('Obriši promo kod?')) return;
+  
+  try {
+    const res = await fetch(`${API_BASE}/api/promos/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      loadData();
+      toast('Promo kod obrisan', 'success');
+    }
+  } catch (err) {
+    toast('Greška pri brisanju', 'error');
+  }
+}
+
+function renderSiteStatsForm() {
+  const fields = [
+    { key:'winRate', label:'Win Rate', placeholder:'74%' },
+    { key:'roi', label:'ROI', placeholder:'+38.7%' },
+    { key:'totalTips', label:'Ukupno tipova', placeholder:'1.240' },
+    { key:'avgOdds', label:'Prosečni kvot', placeholder:'2.21' },
+    { key:'members', label:'Broj članova', placeholder:'4.6k+' },
+  ];
+  document.getElementById('site-stats-form').innerHTML = fields.map(f => `
+    <div class="form-group">
+      <label>${f.label}</label>
+      <input id="ss-${f.key}" value="${siteStats[f.key]||''}" placeholder="${f.placeholder}">
+    </div>`).join('') + `<button class="btn btn-gold" onclick="saveSiteStats()" style="align-self:flex-end;margin-top:4px">Sačuvaj</button>`;
+}
+
+async function saveSiteStats() {
+  const keys = ['winRate','roi','totalTips','avgOdds','members'];
+  const stats = {};
+  keys.forEach(k => stats[k] = document.getElementById('ss-'+k).value.trim());
+  
+  try {
+    const res = await fetch(`${API_BASE}/api/stats`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(stats)
+    });
+    
+    if (res.ok) {
+      toast('Statistike sačuvane!', 'success');
+    }
+  } catch (err) {
+    toast('Greška pri čuvanju', 'error');
+  }
+}
+
+function initApp() {
+  loadData();
+  setInterval(loadData, 10000);
+}
+</script>
+
+</body>
+</html>
